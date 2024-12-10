@@ -22,7 +22,7 @@ Follow these steps to get the project running locally:
 ### 1. Clone the Repository  
 Clone the repository and navigate into the project folder:
 ```bash
-git clone <https://github.com/CSB-DEVELOPMENTS/RUHNIX_UOR_BACKEND>
+git clone https://github.com/CSB-DEVELOPMENTS/RUHNIX_UOR_BACKEND
 cd Ruhnix_UOR_BACKEND
 ```
 
