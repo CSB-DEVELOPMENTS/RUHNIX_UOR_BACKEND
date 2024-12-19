@@ -10,21 +10,22 @@ const authRegister = async (request, response) => {
     const { username, email, phone, password, image, isSeller, description } = request.body;
     const list = request.headers['x-forwarded-for'] || request.socket.remoteAddress;
     const ips = list.split(',');
-
+    
     try {
         const hash = bcrypt.hashSync(password, saltRounds);
-        const { country } = satelize.satelize({ ip: ips[0] }, (error, payload) => payload);
+        //const { country } = satelize.satelize({ ip: ips[0] }, (error, payload) => payload);
         
         const user = new User({
             username,
             email,
             password: hash,
             image,
-            country: country.en,
+            country: 'Sri Lanka', //country.country,
             description,
             isSeller,
             phone
         });
+        console.log(user);
         await user.save();
 
         return response.status(201).send({
@@ -42,7 +43,7 @@ const authRegister = async (request, response) => {
 
         return response.status(500).send({
             error: true,
-            message: 'Something went wrong!'
+            message: message
         });
     }
 }
@@ -119,8 +120,29 @@ const authStatus = async (request, response) => {
     catch({message, status = 500}) {
         return response.status(status).send({
             error: true,
-            message
+            message : message
         })
+    }
+}
+const authCheckUserExistence = async(req, res) => {
+    console.log("Checking user existence");
+    try {
+        const { username, email } = req.body;
+        const usernameExists = await User.findOne({ username: username });
+        const emailExists = await User.findOne({ email: email });
+
+        if (usernameExists) {
+            return res.status(400).send({error:true, message: "Username already exists." });
+        }
+
+        if (emailExists) {
+            return res.status(400).send({error:true, message: "Email already exists." });
+        }
+
+        return res.status(200).send({error:false});
+    } catch (error) {
+        console.error("Error checking user existence:", error);
+        throw new Error("Unable to check user existence");
     }
 }
 
@@ -128,5 +150,6 @@ module.exports = {
     authLogin,
     authLogout,
     authRegister,
-    authStatus
+    authStatus,
+    authCheckUserExistence
 }
